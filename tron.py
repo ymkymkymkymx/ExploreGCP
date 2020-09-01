@@ -22,6 +22,14 @@ darkBlue = (40, 116, 166)
 
 w = 10
 
+pygame.init()
+
+width = 600
+height = 600
+display = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Tron 2D")
+clock = pygame.time.Clock()
+font = pygame.font.SysFont("Agency FB", 65)
 
 # Tron Bike Class
 class tronBike:
@@ -44,7 +52,19 @@ class tronBike:
                 pygame.draw.rect(display, self.darkColor, (self.history[i][0], self.history[i][1], self.w, self.h))
             else:
                 pygame.draw.rect(display, self.color, (self.history[i][0], self.history[i][1], self.w, self.h))
-
+    
+    # return history
+    def rehistory(self):
+        theboard=[[0]*60]*60
+        head=()
+        for i in range(len(self.history)):
+            if i == self.length - 1:
+                theboard[int(self.history[i][0]/10)][int(self.history[i][1]/10)]=self.number/10+0.5
+                head=(int(self.history[i][0]/10),int(self.history[i][1]/10))
+            else:
+                theboard[int(self.history[i][0]/10)][int(self.history[i][1]/10)]=0.5    
+        return (theboard,head,self.number)
+                
     # Move the Bike
     def move(self, xdir, ydir):
         self.x += xdir * self.speed
@@ -190,83 +210,149 @@ def tron():
 
         pygame.display.update()
         clock.tick(10)
-
+        
 
 
 
 
 #Environment for AI against AI training
 class trongame:
-    def __init__(self, istrain):
+    def __init__(self, istrain=True):
         self.bike1 = tronBike(1, red, darkRed, 0 , istrain)
         self.bike2 = tronBike(2, yellow, darkYellow, width, istrain)
         self.board = [[0]*60]*60
-        
+        self.stepcount=0
+        self.isend=False
+        self.x1 = 1
+        self.y1 = 0
+        self.x2 = -1
+        self.y2 = 0        
     # 0=up,1=down,2=left,3=right
     
     
-    
+    def restart(self):
+        self.bike1 = tronBike(1, red, darkRed, 0 , istrain)
+        self.bike2 = tronBike(2, yellow, darkYellow, width, istrain)
+        self.board = [[0]*60]*60        
+        self.stepcount=0
+        self.isend=False
+        self.x1 = 1
+        self.y1 = 0
+        self.x2 = -1
+        self.y2 = 0  
+        
     def step(self,p1move,p2move):
-        x1 = 1
-        y1 = 0
-        x2 = -1
-        y2 = 0
+        if self.isend:
+            return
+        
         if p2move == 0:
-            if not (x2 == 0 and y2 == 1):
-                x2 = 0
-                y2 = -1
+            if not (self.x2 == 0 and self.y2 == 1):
+                self.x2 = 0
+                self.y2 = -1
         if p2move == 1:
-            if not (x2 == 0 and y2 == -1):
-                x2 = 0
-                y2 = 1
+            if not (self.x2 == 0 and self.y2 == -1):
+                self.x2 = 0
+                self.y2 = 1
         if p2move == 2:
-            if not (x2 == 1 and y2 == 0):
-                x2 = -1
-                y2 = 0
+            if not (self.x2 == 1 and self.y2 == 0):
+                self.x2 = -1
+                self.y2 = 0
         if p2move == 3:
-            if not (x2 == -1 and y2 == 0):
-                x2 = 1
-                y2 = 0
+            if not (self.x2 == -1 and self.y2 == 0):
+                self.x2 = 1
+                self.y2 = 0
         if p1move == 0:
-            if not (x1 == 0 and y1 == 1):
-                x1 = 0
-                y1 = -1
+            if not (self.x1 == 0 and self.y1 == 1):
+                self.x1 = 0
+                self.y1 = -1
         if p1move == 1:
-            if not (x1 == 0 and y1 == -1):
-                x1 = 0
-                y1 = 1
+            if not (self.x1 == 0 and self.y1 == -1):
+                self.x1 = 0
+                self.y1 = 1
         if p1move == 2:
-            if not (x1 == 1 and y1 == 0):
-                x1 = -1
-                y1 = 0
+            if not (self.x1 == 1 and self.y1 == 0):
+                self.x1 = -1
+                self.y1 = 0
         if p1move == 3:
-            if not (x1 == -1 and y1 == 0):
-                x1 = 1
-                y1 = 0
+            if not (self.x1 == -1 and self.y1 == 0):
+                self.x1 = 1
+                self.y1 = 0
     
             
     
-            self.bike1.move(x1, y1)
-            self.bike2.move(x2, y2)
+        e1=self.bike1.move(self.x1, self.y1)
+        e2=self.bike2.move(self.x2, self.y2)
+            
+        e3=self.bike1.checkIfHit(self.bike2)
+        e4=self.bike2.checkIfHit(self.bike1)
+        hist1=self.bike1.rehistory()
+        hist2=self.bike2.rehistory()
+        hist1board=hist1[0]
+        hist2board=hist2[0]
+        for i in range(60):
+            for j in range(60):
+                if hist1board[i][j] != 0:
+                    self.board[i][j]=hist1board[i][j] 
+                elif hist2board[i][j] !=0:
+                    self.board[i][j]=hist2board[i][j]
+        self.stepcount=self.stepcount+1
+        if e1!=(0,0):
+            self.isend=True
+            return (self.board.copy(),e1)
+        
+        elif e2!=(0,0):
+            self.isend=True
+            return (self.board.copy(),e2)
+        elif e3!=(0,0):
+            self.isend=True
+            return (self.board.copy(),e3)
+        elif e4!=(0,0):
+            self.isend=True
+            return (self.board.copy(),e4)
+        else:
+            return (self.board.copy(),(0,0))        
+
+
+    def humanagainstagent(self,agent):
+        loop = True
     
-            bike1.checkIfHit(bike2)
-            bike2.checkIfHit(bike1)
+        bike1 = self.bike1
+        bike2 = self.bike2
     
-               
-
-
-
-
-
+        
+    
+        while loop:
+            p1move=-1
+            p2move=-1
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    close()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        close()
+                    if event.key == pygame.K_UP:
+                        p2move=0
+                    if event.key == pygame.K_DOWN:
+                        p2move=1
+                    if event.key == pygame.K_LEFT:
+                        p2move=2
+                    if event.key == pygame.K_RIGHT:
+                        p2move=3
+            p1move=agent.predict(self.board,1)
+            self.step(p1move,p2move)
+            display.fill(background)
+            drawGrid()
+            self.bike1.draw()
+            self.bike2.draw()
+    
+           
+                
+            pygame.display.update()
+            clock.tick(10)        
+            if self.isend:
+                return
 
 
 if __name__ == "__main__":
-    pygame.init()
     
-    width = 600
-    height = 600
-    display = pygame.display.set_mode((width, height))
-    pygame.display.set_caption("Tron 2D")
-    clock = pygame.time.Clock()
-    font = pygame.font.SysFont("Agency FB", 65)
     tron()
