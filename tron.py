@@ -383,6 +383,11 @@ class trongame:
     def agentagainstagent(self,agent1,agent2):
         loop = True
         pygame.init()
+        display = pygame.display.set_mode((width, height))
+        pygame.display.set_caption("Tron 2D")
+        clock = pygame.time.Clock()
+        font = pygame.font.SysFont("Agency FB", 65)    
+        
         bike1 = self.bike1
         bike2 = self.bike2
     

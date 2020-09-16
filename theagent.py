@@ -58,7 +58,7 @@ class theagent:
     def savemodel(self,direct):
         self.model.save(direct)
     def loadmodel(self,direct):
-        self.model.restore(direct)
-        self.model.restore(direct)
+        self.model=tf.keras.models.load_model(direct)
+        self.target_model=tf.keras.models.load_model(direct)
     def predict(self,state):
         return np.argmax(self.model.predict(np.array([state]))[0])
