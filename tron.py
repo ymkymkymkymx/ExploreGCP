@@ -26,8 +26,11 @@ w = 10
 
 width = 600
 height = 600
+pygame.init()
 display = pygame.display.set_mode((width, height))
-    
+pygame.display.set_caption("Tron 2D")
+clock = pygame.time.Clock()
+font = pygame.font.SysFont("Agency FB", 65)    
 
 # Tron Bike Class
 class tronBike:
@@ -114,7 +117,7 @@ def gameend(number):
             return (1,-1)
 
 def gameOver(number):
-    font = pygame.font.SysFont("Agency FB", 65)
+    
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -149,11 +152,9 @@ def close():
 
 def tron():
     loop = True
-    pygame.init()
     
-    pygame.display.set_caption("Tron 2D")
-    clock = pygame.time.Clock()
-    font = pygame.font.SysFont("Agency FB", 65)
+    
+    
     bike1 = tronBike(1, red, darkRed, 0)
     bike2 = tronBike(2, yellow, darkYellow, width)
 
@@ -343,11 +344,7 @@ class trongame:
 
     def humanagainstagent(self,agent):
         loop = True
-        pygame.init()
-        
-        pygame.display.set_caption("Tron 2D")
-        clock = pygame.time.Clock()
-        font = pygame.font.SysFont("Agency FB", 65)
+       
         bike1 = self.bike1
         bike2 = self.bike2
     
@@ -386,10 +383,6 @@ class trongame:
     def agentagainstagent(self,agent1,agent2):
         loop = True
         pygame.init()
-        
-        pygame.display.set_caption("Tron 2D")
-        clock = pygame.time.Clock()
-        font = pygame.font.SysFont("Agency FB", 65)
         bike1 = self.bike1
         bike2 = self.bike2
     
