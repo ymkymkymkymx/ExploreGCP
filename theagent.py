@@ -8,7 +8,6 @@ class theagent:
         self.model = tf.keras.models.Sequential([
             tf.keras.layers.Conv2D( filters=1,kernel_size=2, activation='relu', input_shape=(60,60,1)),
             tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(120, activation='sigmoid'),
             tf.keras.layers.Dense(84, activation='sigmoid'),
             tf.keras.layers.Dense(4, activation='linear')
         ])
@@ -16,20 +15,19 @@ class theagent:
         self.target_model=tf.keras.models.Sequential([
             tf.keras.layers.Conv2D(filters=1, kernel_size=2, activation='relu', input_shape=(60,60,1)),
             tf.keras.layers.Flatten(),
-            tf.keras.layers.Dense(120, activation='sigmoid'),
             tf.keras.layers.Dense(84, activation='sigmoid'),
             tf.keras.layers.Dense(4, activation='linear')
         ])
-        self.target_model.compile(loss="mse", optimizer=Adam(lr=0.001), metrics=['accuracy'])
+        self.target_model.compile(loss="mse", optimizer=Adam(lr=0.01), metrics=['accuracy'])
         self.target_model.set_weights(self.model.get_weights())
-        self.memory=deque(maxlen=4000)
+        self.memory=deque(maxlen=400)
         self.episode=0
     def loadmemory(self,trans):
         self.memory.append(trans)
     def train(self,isepiend):
-        if len(self.memory)<2000:
+        if len(self.memory)<200:
             return
-        batch=random.sample(self.memory,1000)
+        batch=random.sample(self.memory,100)
         states=np.array([trans[0] for trans in batch])
         currentqlist=self.model.predict(states)
         newstates=np.array([trans[3] for trans in batch])

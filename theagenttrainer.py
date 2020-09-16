@@ -5,12 +5,12 @@ from tron import *
 from theagent import*
 from tronrandomagent import *
 import numpy as np
-direct='/agentmodels/agent1.model'
+direct='agent1model'
 env=trongame()
 dqn=theagent()
 ragent=randomagent()
 currentstate=env.board.copy()
-for i in range(10000):
+for i in range(100):
     currentstate=env.board.copy()
     done= False
     while not done:
@@ -24,10 +24,10 @@ for i in range(10000):
         dqn.train(done)
         currentstate=newstate
     env.restart()
-    if i%20==0:
-        print("{0:d} episodes finished".format(i))
+    if i%2==0:
+        print("{0:d} episodes finished,{1:d} samples in batch".format(i,len(dqn.memory)))
     
-    if i%500==0:
+    if i%10==0:
         count=0
         for j in range(100):
             env.restart()
@@ -41,6 +41,8 @@ for i in range(10000):
                         count+=1
                     done=True
                 currentstate=newstate 
+        env.restart()
+        env.agentagainstagent(dqn,ragent)
         env.restart()
         print("Eps {0:} winrate {1:.2f}".format(i,count/100))
     dqn.savemodel(direct)

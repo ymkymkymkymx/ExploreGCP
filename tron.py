@@ -22,14 +22,12 @@ darkBlue = (40, 116, 166)
 
 w = 10
 
-pygame.init()
+
 
 width = 600
 height = 600
 display = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Tron 2D")
-clock = pygame.time.Clock()
-font = pygame.font.SysFont("Agency FB", 65)
+    
 
 # Tron Bike Class
 class tronBike:
@@ -116,6 +114,7 @@ def gameend(number):
             return (1,-1)
 
 def gameOver(number):
+    font = pygame.font.SysFont("Agency FB", 65)
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -150,7 +149,11 @@ def close():
 
 def tron():
     loop = True
-
+    pygame.init()
+    
+    pygame.display.set_caption("Tron 2D")
+    clock = pygame.time.Clock()
+    font = pygame.font.SysFont("Agency FB", 65)
     bike1 = tronBike(1, red, darkRed, 0)
     bike2 = tronBike(2, yellow, darkYellow, width)
 
@@ -340,7 +343,11 @@ class trongame:
 
     def humanagainstagent(self,agent):
         loop = True
-    
+        pygame.init()
+        
+        pygame.display.set_caption("Tron 2D")
+        clock = pygame.time.Clock()
+        font = pygame.font.SysFont("Agency FB", 65)
         bike1 = self.bike1
         bike2 = self.bike2
     
@@ -376,7 +383,37 @@ class trongame:
             clock.tick(10)        
             if self.isend:
                 return
-
+    def agentagainstagent(self,agent1,agent2):
+        loop = True
+        pygame.init()
+        
+        pygame.display.set_caption("Tron 2D")
+        clock = pygame.time.Clock()
+        font = pygame.font.SysFont("Agency FB", 65)
+        bike1 = self.bike1
+        bike2 = self.bike2
+    
+    
+    
+        while loop:
+            p1move=-1
+            p2move=-1
+            
+            p1move=agent1.predict(self.board)
+            p2move=agent2.predict(self.board)
+            self.step(p1move,p2move)
+            display.fill(background)
+            drawGrid()
+            self.bike1.draw()
+            self.bike2.draw()
+    
+    
+    
+            pygame.display.update()
+            clock.tick(10)        
+            if self.isend:
+                
+                return        
 
 if __name__ == "__main__":
     
