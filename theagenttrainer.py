@@ -45,4 +45,4 @@ for i in range(100):
         env.agentagainstagent(dqn,ragent)
         env.restart()
         print("Eps {0:} winrate {1:.2f}".format(i,count/100))
-    dqn.savemodel(direct)
+dqn.savemodel(direct)
