@@ -1,0 +1,25 @@
+def remote = [:]
+  remote.name = 'ymkymkymkymx@35.223.245.235'
+  remote.host = '35.223.245.235'
+  remote.user = 'root'
+  remote.password = 'ymk-990504'
+  remote.allowAnyHosts = true
+
+pipeline {
+    agent any
+  
+    stages {
+        stage('Hello') {
+            steps {
+              bat label: '', script: '''cd\\
+d:
+cd githubrepos\\ExploreGCP\\ExploreGCP
+copy helloworld.py C:\\Users\\yumin\\.jenkins\\workspace\\testgcp'''
+            sshPut remote: remote, from: 'helloworld.py', into: '.'
+                
+                
+            }
+        
+        }
+    }
+}

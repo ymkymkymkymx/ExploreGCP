@@ -58,11 +58,13 @@ class tronBike:
         theboard=[[0]*60]*60
         head=()
         for i in range(len(self.history)):
-            if i == self.length - 1:
-                theboard[int(self.history[i][0]/10)][int(self.history[i][1]/10)]=self.number/10+0.5
-                head=(int(self.history[i][0]/10),int(self.history[i][1]/10))
+            if i == self.length - 1:  
+                if 0<=int(self.history[i][0]/10)<60 and 0<=int(self.history[i][1]/10)<60:
+                    theboard[int(self.history[i][0]/10)][int(self.history[i][1]/10)]=self.number/10+0.5
+                    head=(int(self.history[i][0]/10),int(self.history[i][1]/10))
             else:
-                theboard[int(self.history[i][0]/10)][int(self.history[i][1]/10)]=0.5    
+                if 0<=int(self.history[i][0]/10)<60 and 0<=int(self.history[i][1]/10)<60:
+                    theboard[int(self.history[i][0]/10)][int(self.history[i][1]/10)]=0.5    
         return (theboard,head,self.number)
                 
     # Move the Bike
@@ -220,26 +222,49 @@ class trongame:
     def __init__(self, istrain=True):
         self.bike1 = tronBike(1, red, darkRed, 0 , istrain)
         self.bike2 = tronBike(2, yellow, darkYellow, width, istrain)
-        self.board = [[0]*60]*60
+        self.board = [[[0]]*60]*60
         self.stepcount=0
         self.isend=False
         self.x1 = 1
         self.y1 = 0
         self.x2 = -1
-        self.y2 = 0        
+        self.y2 = 0
+        hist1=self.bike1.rehistory()
+        hist2=self.bike2.rehistory()
+        hist1board=hist1[0]
+        hist2board=hist2[0]
+        self.istrain=istrain
+        for i in range(60):
+            for j in range(60):
+                if hist1board[i][j] != 0:
+                    self.board[i][j][0]=hist1board[i][j] 
+                elif hist2board[i][j] !=0:
+                    self.board[i][j][0]=hist2board[i][j]        
     # 0=up,1=down,2=left,3=right
     
     
     def restart(self):
-        self.bike1 = tronBike(1, red, darkRed, 0 , istrain)
-        self.bike2 = tronBike(2, yellow, darkYellow, width, istrain)
-        self.board = [[0]*60]*60        
+        self.bike1 = tronBike(1, red, darkRed, 0 , self.istrain)
+        self.bike2 = tronBike(2, yellow, darkYellow, width, self.istrain)
+        self.board = [[[0]]*60]*60        
         self.stepcount=0
         self.isend=False
         self.x1 = 1
         self.y1 = 0
         self.x2 = -1
         self.y2 = 0  
+        hist1=self.bike1.rehistory()
+        hist2=self.bike2.rehistory()
+        hist1board=hist1[0]
+        hist2board=hist2[0]
+        for i in range(60):
+            for j in range(60):
+                if hist1board[i][j] != 0:
+                    self.board[i][j][0]=hist1board[i][j] 
+                elif hist2board[i][j] !=0:
+                    self.board[i][j][0]=hist2board[i][j]        
+        
+        
         
     def step(self,p1move,p2move):
         if self.isend:
@@ -292,9 +317,9 @@ class trongame:
         for i in range(60):
             for j in range(60):
                 if hist1board[i][j] != 0:
-                    self.board[i][j]=hist1board[i][j] 
+                    self.board[i][j][0]=hist1board[i][j] 
                 elif hist2board[i][j] !=0:
-                    self.board[i][j]=hist2board[i][j]
+                    self.board[i][j][0]=hist2board[i][j]
         self.stepcount=self.stepcount+1
         if e1!=(0,0):
             self.isend=True
@@ -338,7 +363,7 @@ class trongame:
                         p2move=2
                     if event.key == pygame.K_RIGHT:
                         p2move=3
-            p1move=agent.predict(self.board,1)
+            p1move=agent.predict(self.board)
             self.step(p1move,p2move)
             display.fill(background)
             drawGrid()
